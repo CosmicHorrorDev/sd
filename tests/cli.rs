@@ -263,7 +263,10 @@ mod cli {
             std::str::from_utf8(&failed_command.get_output().stderr).unwrap();
         // Normalize unstable path bits
         let stderr_norm = stderr_orig
-            .replace(test_home.to_str().unwrap(), "<test_home>")
+            .replace(
+                fs::canonicalize(test_home).unwrap().to_str().unwrap(),
+                "<test_home>",
+            )
             .replace('\\', "/");
         insta::assert_snapshot!(snap_name, stderr_norm);
     }
@@ -383,7 +386,10 @@ mod cli {
                     .unwrap();
             // Normalize unstable path bits
             let stderr_partial_norm = stderr_orig
-                .replace(test_home.to_str().unwrap(), "<test_home>")
+                .replace(
+                    fs::canonicalize(test_home)?.to_str().unwrap(),
+                    "<test_home>",
+                )
                 .replace('\\', "/");
             let tmp_file_rep = regex::Regex::new(r"\.tmp\w+")?;
             let stderr_norm =
